@@ -87,6 +87,9 @@ function App() {
 
 	const handleDelete = () => {
 		setSavedData([]);
+		setInputSets([emptyData]);
+		setHasData(false);
+		setError(null);
 	};
 
 	return (
