@@ -20,23 +20,19 @@ function App() {
 	const [id, setId] = useState(1);
 	const [backgroundColor, setBackgroundColor] = useState<string>("#fff");
 	const [savedData, setSavedData] = useState<InputSet[]>([]);
+	const [hasData, setHasData] = useState(false);
 
 	const handleInputChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		id: number,
 		field: "name" | "surname"
 	) => {
-		
 		const value = e.target.value;
 		setInputSets((prevInputSets) =>
 			prevInputSets.map((inputSet) =>
 				inputSet.id === id ? { ...inputSet, [field]: value } : inputSet
 			)
 		);
-	};
-
-	const handleSave = () => {
-		setSavedData([...inputSets]);
 	};
 
 	const addInputSet = () => {
@@ -74,6 +70,23 @@ function App() {
 		setBackgroundColor(newBackgroundColor);
 
 		document.body.style.backgroundColor = newBackgroundColor;
+	};
+
+	const handleSave = () => {
+		const hasEmptyFields = inputSets.some((inputSet) => !inputSet.name && !inputSet.surname);
+
+		if (hasEmptyFields) {
+			setError('Please fill inputs correctly');
+			return;
+		}
+		
+		setSavedData([...inputSets]);
+		setHasData(true);
+		setError(null);
+	};
+
+	const handleDelete = () => {
+		setSavedData([]);
 	};
 
 	return (
@@ -181,30 +194,33 @@ function App() {
 					Save
 				</Button>
 			</Grid>
-			<div className="container">
-				<h2>Saved Data:</h2>
-				<div className="border">
-					{savedData.map((savedItem) => (
-						<p
-							style={{
-								color:
-									backgroundColor === "#333"
-										? "#fff"
-										: "#000",
-							}}
-							className="border-outline"
-							key={savedItem.id}
-						>
-							<span style={{ color: "red" }}>Name: </span>
-							&nbsp;&nbsp;
-							{savedItem.name}&nbsp;&nbsp;&nbsp;
-							<span style={{ color: "red" }}>Surname: </span>
-							&nbsp;&nbsp;
-							{savedItem.surname}
-						</p>
-					))}
+			{hasData && (
+				<div className="wrapper">
+					<h2>Saved Data:</h2>
+					<div className="border">
+						{savedData.map((savedItem) => (
+							<p
+								style={{
+									color:
+										backgroundColor === "#333"
+											? "#fff"
+											: "#000",
+								}}
+								className="border-outline"
+								key={savedItem.id}
+							>
+								<span style={{ color: "red" }}>Name: </span>
+								&nbsp;&nbsp;
+								{savedItem.name}&nbsp;&nbsp;&nbsp;
+								<span style={{ color: "red" }}>Surname: </span>
+								&nbsp;&nbsp;
+								{savedItem.surname}
+							</p>
+						))}
+						<Button onClick={handleDelete}>Delete List</Button>
+					</div>
 				</div>
-			</div>
+			)}
 		</Grid>
 	);
 }
